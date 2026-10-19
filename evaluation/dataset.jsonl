@@ -1,0 +1,19 @@
+{"user": "bob", "query": "How many vacation days do I get each year?", "relevant": ["default-employee_handbook"]}
+{"user": "bob", "query": "Am I allowed to work remotely?", "relevant": ["default-employee_handbook"]}
+{"user": "bob", "query": "How long is parental leave?", "relevant": ["default-employee_handbook"]}
+{"user": "bob", "query": "What should I do if my device is lost or stolen?", "relevant": ["default-security_policy"]}
+{"user": "bob", "query": "Do I need a password manager and multi-factor authentication?", "relevant": ["default-security_policy"]}
+{"user": "bob", "query": "How are services deployed and how does on-call work?", "relevant": ["acme-engineering"]}
+{"user": "bob", "query": "What database setup does the platform use?", "relevant": ["acme-engineering"]}
+{"user": "carol", "query": "What was the revenue in the fourth quarter?", "relevant": ["acme-finance"]}
+{"user": "carol", "query": "What are the operating margin and cash reserve?", "relevant": ["acme-finance"]}
+{"user": "carol", "query": "How many vacation days do employees receive?", "relevant": ["default-employee_handbook"]}
+{"user": "alice", "query": "How large is the executive compensation pool?", "relevant": ["acme-executive"]}
+{"user": "alice", "query": "How often are token signing keys rotated?", "relevant": ["default-platform_runbook"]}
+{"user": "alice", "query": "How do equity grants vest?", "relevant": ["acme-executive"]}
+{"user": "dave", "query": "What technology does engineering build on?", "relevant": ["globex-engineering"]}
+{"user": "dave", "query": "How does incident response rotation work?", "relevant": ["globex-engineering"]}
+{"user": "dave", "query": "How much paid parental leave do we get?", "relevant": ["default-employee_handbook"]}
+{"user": "erin", "query": "When will the Meridian analytics product launch?", "relevant": ["globex-executive"]}
+{"user": "erin", "query": "What was Globex revenue in the fourth quarter?", "relevant": ["globex-finance"]}
+{"user": "erin", "query": "Which start-up will be acquired?", "relevant": ["globex-executive"]}

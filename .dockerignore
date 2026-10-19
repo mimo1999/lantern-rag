@@ -1,0 +1,8 @@
+*
+!pyproject.toml
+!app
+!scripts
+!evaluation
+!data
+**/__pycache__
+evaluation/reports

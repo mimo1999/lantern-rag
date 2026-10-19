@@ -1,0 +1,37 @@
+/* Design tokens shared by the landing page and the chat app.
+   Shape rule: 8px radius on every surface; pills are for small chips only.
+   One accent (vermilion). One theme at a time, chosen by prefers-color-scheme. */
+:root {
+  --bg: #f6f7f8;
+  --surface: #fcfcfd;
+  --sunk: #eceef0;
+  --ink: #15171a;
+  --muted: #565d65;
+  --line: #d9dce0;
+  --accent: #c2391a;
+  --on-accent: #fffaf8;
+  --accent-tint: #fbe8e2;
+  --code-bg: #1b1e22;
+  --code-ink: #e8eaec;
+  --radius: 8px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --font: ui-sans-serif, system-ui, "Segoe UI Variable Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, monospace;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1012;
+    --surface: #15181b;
+    --sunk: #1b1f23;
+    --ink: #eceef0;
+    --muted: #9aa1a9;
+    --line: #2a2f35;
+    --accent: #f2754f;
+    --on-accent: #1d0e08;
+    --accent-tint: #2a1812;
+    --code-bg: #0a0b0d;
+    --code-ink: #e8eaec;
+  }
+}

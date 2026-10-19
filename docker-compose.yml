@@ -1,0 +1,120 @@
+# One command brings up everything: docker compose up --build
+#   postgres     PostgreSQL + pgvector (users, documents, audit, vectors); not published
+#   api          migrations, then the API, landing page (/) and chat app (/app/)
+#   seed         one-shot, APP_ENV=development only: demo tenants/users and the demo corpus
+#   prometheus   metrics
+# Ollama (embeddings, chat, vision) is the one already running on your machine, reached through
+# host.docker.internal, so models are not downloaded again. It must have EMBEDDING_MODEL,
+# ASSET_EMBEDDING_MODEL, LLM_MODEL and VISION_MODEL pulled (see README).
+#
+# Self-contained alternative, with its own Ollama container and a first-start model download of
+# several GB:
+#   OLLAMA_URL_DOCKER=http://ollama:11434 docker compose --profile bundled-ollama up --build
+#   ollama       Ollama server; not published
+#   ollama-pull  one-shot: downloads the four models into the ollama_data volume
+# Settings come from .env; the values below are the ones that must differ inside Compose.
+
+x-app: &app
+  build: .
+  env_file: .env
+  environment:
+    JWT_SECRET_KEY: ${JWT_SECRET_KEY:?set JWT_SECRET_KEY in .env}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    POSTGRES_HOST: postgres
+    POSTGRES_PORT: "5432"
+    OLLAMA_URL: ${OLLAMA_URL_DOCKER:-http://host.docker.internal:11434}
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-permission_aware_rag}
+    # Not published: only containers on this network can reach the database. The pgvector
+    # image ships the extension; migration 004 creates it (the default user is a superuser).
+    expose:
+      - "5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  ollama:
+    profiles: ["bundled-ollama"]
+    image: ollama/ollama:latest
+    # Not published, so it cannot clash with an Ollama already running on the host.
+    expose:
+      - "11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  ollama-pull:
+    profiles: ["bundled-ollama"]
+    image: ollama/ollama:latest
+    restart: "no"
+    environment:
+      OLLAMA_HOST: ollama:11434
+      MODELS: ${EMBEDDING_MODEL:-all-minilm:22m} ${ASSET_EMBEDDING_MODEL:-bge-m3} ${LLM_MODEL:-gemma4:e2b} ${VISION_MODEL:-gemma4:e2b}
+    entrypoint: ["/bin/sh", "-c"]
+    # Chat and vision default to the same model; pulling it twice is a quick no-op.
+    command: ['for m in $$MODELS; do ollama pull "$$m" || exit 1; done']
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+  api:
+    <<: *app
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      # Only waited for when the bundled-ollama profile is active.
+      ollama-pull:
+        condition: service_completed_successfully
+        required: false
+
+  seed:
+    <<: *app
+    restart: "no"
+    command:
+      - sh
+      - -c
+      - |
+        if [ "$$APP_ENV" = development ]; then
+          python -m scripts.seed_db && python -m scripts.ingest_documents
+        else
+          echo "APP_ENV is not development: skipping demo data"
+        fi
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama-pull:
+        condition: service_completed_successfully
+        required: false
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    volumes:
+      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  ollama_data:
+  prometheus_data:

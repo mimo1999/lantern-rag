@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lantern: answers only from documents you may read</title>
+  <meta name="description" content="A document assistant that enforces who can read what inside the database query, before any model sees a word.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23c2391a'/%3E%3Cpath d='M9 23V12l7-5 7 5v11' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/landing.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-row">
+      <a class="wordmark" href="/" aria-label="Lantern home">Lantern</a>
+      <nav class="nav-links" aria-label="Page sections">
+        <a href="#security">Security</a>
+        <a href="#how">How it works</a>
+        <a href="#sources">Sources</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <a class="btn primary" href="/app/">Open the app</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap">
+      <div class="hero-copy">
+        <h1 data-in>Answers only from documents you may read.</h1>
+        <p class="lead" data-in>Ask questions across shared and team documents. Permissions are enforced inside the database query, before the model sees anything.</p>
+        <div class="actions" data-in>
+          <a class="btn primary" href="/app/">Open the app</a>
+          <a class="btn ghost" href="#how">How it works</a>
+        </div>
+      </div>
+
+      <div class="explorer" data-in aria-labelledby="explorer-title">
+        <div class="explorer-head">
+          <h2 id="explorer-title">Who can retrieve what</h2>
+          <p>Pick a person. Sample data from the demo corpus.</p>
+        </div>
+        <fieldset class="people">
+          <legend class="sr-only">Person</legend>
+        </fieldset>
+        <p class="tally" id="tally" aria-live="polite"></p>
+        <div class="doclist" id="doclist"></div>
+      </div>
+    </section>
+
+    <section class="band" id="security" aria-labelledby="security-title">
+      <div class="wrap">
+        <h2 id="security-title" class="reveal">Isolation you can measure.</h2>
+        <p class="section-lead reveal">Every test run attacks the system with 138 adversarial questions and checks each returned passage against an independent rulebook.</p>
+
+        <div class="bento">
+          <article class="cell proof reveal">
+            <p class="big">0</p>
+            <p class="cell-title">unauthorized passages retrieved across 138 adversarial queries.</p>
+            <p class="cell-note">Latest run on the demo corpus. Repeat it with one command:</p>
+            <code class="cmd">uv run python -m evaluation.security_eval</code>
+          </article>
+
+          <article class="cell code reveal">
+            <h3>The rule lives in the SQL</h3>
+            <pre><code>WHERE (scope = 'default' OR tenant_id = $1)
+  AND allowed_roles &amp;&amp; $2</code></pre>
+            <p>Built in one place from the verified token. Never from the request body.</p>
+          </article>
+
+          <article class="cell reveal">
+            <h3>Fails closed</h3>
+            <p>If the audit record cannot be written, no answer is returned.</p>
+          </article>
+
+          <article class="cell hatch reveal">
+            <h3>Append-only audit</h3>
+            <p>A database trigger rejects edits and deletes of past queries.</p>
+          </article>
+
+          <article class="cell wide reveal">
+            <h3>Documents are data, not instructions</h3>
+            <p>Retrieved text is escaped and fenced, and the model is told to ignore any commands inside it. Authorization never depends on the model behaving.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap flow-section" id="how" aria-labelledby="how-title">
+      <h2 id="how-title" class="reveal">From question to cited answer.</h2>
+      <p class="section-lead reveal">Five handoffs in a fixed order that no request can reorder.</p>
+      <ol class="flow">
+        <li class="reveal"><h3>Verify</h3><p>A signed token identifies the person, their organization and their roles.</p></li>
+        <li class="reveal"><h3>Scope</h3><p>A filter is built from that identity, never from anything the browser sends.</p></li>
+        <li class="reveal"><h3>Search</h3><p>Vector search runs only over the rows the filter allows.</p></li>
+        <li class="reveal"><h3>Answer</h3><p>The model sees numbered passages and cites them by number.</p></li>
+        <li class="reveal"><h3>Record</h3><p>The question's hash, the passages used and the timings are logged.</p></li>
+      </ol>
+    </section>
+
+    <section class="band" id="sources" aria-labelledby="sources-title">
+      <div class="wrap">
+        <h2 id="sources-title" class="reveal">Every answer shows its sources.</h2>
+        <p class="section-lead reveal">The panel lists exactly the passages the model was given, with similarity scores.</p>
+
+        <div class="console reveal" role="group" aria-label="Sample answer with sources">
+          <div class="console-answer">
+            <p class="chip">Sample answer</p>
+            <p class="q">How long is parental leave?</p>
+            <p class="a">Parental leave is 16 weeks, fully paid <sup class="cite">[1]</sup></p>
+          </div>
+          <div class="console-sources">
+            <h3>Sources for this answer</h3>
+            <div class="src">
+              <div class="src-top"><span class="src-title">[1] Employee Handbook</span><span class="chip">Shared</span></div>
+              <div class="score"><span class="bar"></span><span class="num">0.80</span></div>
+            </div>
+            <p class="src-note">Weak matches, below 40% of the best score, are dropped before the model sees them.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap faq" id="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title" class="reveal">Common questions.</h2>
+      <div class="reveal">
+        <details>
+          <summary>Does any data leave my machine?</summary>
+          <p>Embeddings and answers come from a local Ollama server by default. Nothing goes to a hosted model unless you configure one.</p>
+        </details>
+        <details>
+          <summary>Which files can be uploaded?</summary>
+          <p>PDF, Markdown and plain text, up to 10 MB each. Identical files are detected and indexed once.</p>
+        </details>
+        <details>
+          <summary>Who can add documents?</summary>
+          <p>Organization admins add documents for their own organization. Only platform admins can publish shared documents.</p>
+        </details>
+        <details>
+          <summary>What happens when nothing matches?</summary>
+          <p>The assistant says it found nothing and the model is not called, so no cost and no guessing.</p>
+        </details>
+        <details>
+          <summary>Can one organization see another's audit log?</summary>
+          <p>No. Admins see their own organization's records. Only platform admins can query across organizations.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="closing wrap" aria-labelledby="closing-title">
+      <h2 id="closing-title" class="reveal">Ask your documents without exposing them.</h2>
+      <a class="btn primary reveal" href="/app/">Open the app</a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot-row">
+      <span class="wordmark">Lantern</span>
+      <span class="muted">Built on FastAPI, PostgreSQL with pgvector and Ollama.</span>
+      <a href="/docs">API reference</a>
+    </div>
+  </footer>
+
+  <script src="/landing.js" defer></script>
+</body>
+</html>

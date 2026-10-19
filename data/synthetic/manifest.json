@@ -1,0 +1,13 @@
+{
+  "documents": [
+    {"file": "default/employee_handbook.md", "scope": "default", "tenant_id": null, "title": "Employee Handbook", "allowed_roles": ["employee", "admin", "finance", "engineering"], "canary": "CANARY-DEFAULT-HANDBOOK"},
+    {"file": "default/security_policy.md", "scope": "default", "tenant_id": null, "title": "Security Policy", "allowed_roles": ["employee", "admin", "finance", "engineering"], "canary": "CANARY-DEFAULT-SECURITY"},
+    {"file": "default/platform_runbook.md", "scope": "default", "tenant_id": null, "title": "Platform Admin Runbook", "allowed_roles": ["admin"], "canary": "CANARY-DEFAULT-RUNBOOK"},
+    {"file": "acme/engineering.md", "scope": "tenant", "tenant_id": "acme", "title": "Acme Engineering Overview", "allowed_roles": ["employee", "admin"], "canary": "CANARY-ACME-ENG"},
+    {"file": "acme/finance.md", "scope": "tenant", "tenant_id": "acme", "title": "Acme Finance Report Q4", "allowed_roles": ["finance", "admin"], "canary": "CANARY-ACME-FIN"},
+    {"file": "acme/executive.md", "scope": "tenant", "tenant_id": "acme", "title": "Acme Executive Compensation", "allowed_roles": ["admin"], "canary": "CANARY-ACME-EXEC"},
+    {"file": "globex/engineering.md", "scope": "tenant", "tenant_id": "globex", "title": "Globex Engineering Overview", "allowed_roles": ["employee", "admin"], "canary": "CANARY-GLOBEX-ENG"},
+    {"file": "globex/finance.md", "scope": "tenant", "tenant_id": "globex", "title": "Globex Finance Report Q4", "allowed_roles": ["admin"], "canary": "CANARY-GLOBEX-FIN"},
+    {"file": "globex/executive.md", "scope": "tenant", "tenant_id": "globex", "title": "Globex Product Roadmap and Strategy", "allowed_roles": ["admin"], "canary": "CANARY-GLOBEX-EXEC"}
+  ]
+}

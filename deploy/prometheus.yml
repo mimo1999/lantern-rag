@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: rag-api
+    metrics_path: /metrics
+    # If METRICS_TOKEN is set on the API, mount the token as a file and add:
+    #   authorization:
+    #     credentials_file: /etc/prometheus/metrics_token
+    static_configs:
+      - targets: ["api:8000"]

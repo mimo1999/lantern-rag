@@ -1,0 +1,5 @@
+# Keep LF in the repository and working tree (Dockerfile, SQL, scripts); never touch binaries.
+* text=auto eol=lf
+*.pdf binary
+*.png binary
+*.jpg binary
